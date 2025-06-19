@@ -1,0 +1,23 @@
+# requirements.txt - v0.1.0
+# Core
+python-dotenv
+
+# Telegram
+python-telegram-bot
+
+# Kraken API (choose one or adapt)
+krakenex
+pykrakenapi
+# ccxt
+
+# LLM (e.g., for OpenAI)
+# openai
+
+# Data Analysis
+pandas
+numpy
+# TA-Lib (requires separate installation of TA-Lib C library)
+pandas-ta
+
+# For Async
+httpx[http2] # if using async http requests
