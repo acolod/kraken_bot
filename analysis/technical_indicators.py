@@ -1,8 +1,7 @@
-# analysis/technical_indicators.py - v0.1.0
+# analysis/technical_indicators.py - v0.2.0 (RSI enhancement)
 import logging
 import pandas as pd
-# import talib # if using TA-Lib
-import pandas_ta as ta # if using pandas_ta
+import pandas_ta as ta
 
 logger = logging.getLogger(__name__)
 
@@ -13,20 +12,29 @@ class TechnicalIndicators:
     def __init__(self):
         logger.info("TechnicalIndicators initialized.")
 
-    def calculate_rsi(self, ohlcv_df: pd.DataFrame, period: int = 14) -> pd.Series | None:
-        """Calculates the Relative Strength Index (RSI)."""
-        logger.debug(f"Calculating RSI with period {period}...")
+    def calculate_rsi(self, ohlcv_df: pd.DataFrame, period: int = 14) -> float | None:
+        """
+        Calculates the most recent Relative Strength Index (RSI) value.
+        Returns a single float value or None if calculation fails.
+        """
+        logger.debug(f"Calculating latest RSI with period {period}...")
         if 'close' not in ohlcv_df.columns or ohlcv_df['close'].empty:
             logger.warning("RSI calculation requires 'close' column with data.")
             return None
         try:
-            # Ensure 'close' is numeric and handle potential NaNs from data source
             close_prices = pd.to_numeric(ohlcv_df['close'], errors='coerce').dropna()
             if len(close_prices) < period:
                 logger.warning(f"Not enough data points ({len(close_prices)}) to calculate RSI with period {period}.")
                 return None
+            
             rsi_series = ta.rsi(close=close_prices, length=period)
-            return rsi_series
+            if rsi_series is None or rsi_series.empty:
+                logger.warning(f"RSI calculation for period {period} returned empty series.")
+                return None
+
+            latest_rsi = rsi_series.iloc[-1]
+            logger.info(f"Calculated latest RSI({period}): {latest_rsi}")
+            return float(latest_rsi) if pd.notna(latest_rsi) else None
         except Exception as e:
             logger.error(f"Error calculating RSI: {e}")
             return None
@@ -45,7 +53,6 @@ class TechnicalIndicators:
             return None
 
         try:
-            # Ensure 'close' is numeric
             close_prices = pd.to_numeric(ohlc_df['close'], errors='coerce')
             if close_prices.isnull().any():
                 logger.error("SMA calculation: Non-numeric values found in 'close' prices after coercion.")
