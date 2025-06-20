@@ -8,10 +8,9 @@ python-telegram-bot
 # Kraken API (choose one or adapt)
 krakenex
 pykrakenapi
-# ccxt
 
-# LLM (e.g., for OpenAI)
-# openai
+# LLM (Google Gemini)
+google-generativeai >= 0.5.0 # For Google Gemini LLM
 
 # Data Analysis
 pandas
@@ -21,3 +20,6 @@ pandas-ta
 
 # For Async
 httpx[http2] # if using async http requests
+
+# For system SSL certificate integration (especially in corporate environments)
+pip_system_certs
